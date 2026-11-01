@@ -1,0 +1,2 @@
+@include('admin.claims.invoice')
+
