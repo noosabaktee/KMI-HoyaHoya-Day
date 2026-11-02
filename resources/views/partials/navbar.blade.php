@@ -1,29 +1,31 @@
-<header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-20">
-  <div class="flex items-center space-x-3">
+<header class="h-14 sm:h-16 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-6 z-20 shrink-0">
+  <div class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 mr-2">
     <!-- Mobile Hamburger Toggle -->
-    <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none">
+    <button id="mobileMenuBtn" class="md:hidden p-1.5 -ml-1 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none shrink-0" aria-label="Buka Menu">
       <i class='bx bx-menu text-2xl'></i>
     </button>
 
-    <div class="flex items-center space-x-2">
-      <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-      <h2 class="text-base sm:text-lg font-bold text-slate-800 tracking-tight">
+    <div class="flex items-center space-x-2 min-w-0 flex-1">
+      <span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+      <h2 class="text-xs sm:text-sm md:text-base font-bold text-slate-900 tracking-tight truncate" title="@yield('header_title', 'Hoya-Hoya Day Festival 2026')">
         @yield('header_title', 'Hoya-Hoya Day Festival 2026')
       </h2>
     </div>
   </div>
 
-  <div class="flex items-center space-x-3">
-    <!-- Event Badge -->
-    <div class="hidden sm:flex items-center space-x-1.5 px-3 py-1 bg-kmi-50 border border-kmi-200/60 rounded-full text-xs font-semibold text-kmi-700">
+  <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+    <!-- Event Badge (visible on tablet and desktop) -->
+    <div class="hidden lg:flex items-center space-x-1.5 px-3 py-1 bg-kmi-50 border border-kmi-200/60 rounded-full text-xs font-semibold text-kmi-700">
       <i class='bx bxs-badge-check text-kmi-600 text-sm'></i>
       <span>PT Kalbe Morinaga Indonesia</span>
     </div>
 
-    <!-- User Profile Dropdown or Info -->
-    <div class="flex items-center space-x-2 pl-2">
-      <span class="text-xs font-medium text-slate-500 hidden md:inline">Halo,</span>
-      <span class="text-xs font-bold text-slate-700">{{ auth()->user()->txtUsername }}</span>
+    <!-- User Profile Badge -->
+    <div class="flex items-center space-x-1.5 bg-slate-50 border border-slate-200/80 py-1 px-2.5 rounded-xl">
+      <div class="w-6 h-6 rounded-lg bg-kmi-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+        {{ strtoupper(substr(auth()->user()->txtUsername, 0, 1)) }}
+      </div>
+      <span class="text-xs font-bold text-slate-700 max-w-[85px] sm:max-w-none truncate">{{ auth()->user()->txtUsername }}</span>
     </div>
   </div>
 </header>

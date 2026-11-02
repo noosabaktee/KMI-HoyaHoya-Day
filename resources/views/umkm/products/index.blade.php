@@ -14,7 +14,7 @@
       </p>
     </div>
 
-    <button type="button" onclick="openModal('modalAddProduct')" class="px-4 py-2.5 bg-kmi-600 hover:bg-kmi-700 text-white font-bold rounded-xl text-xs shadow-md shadow-kmi-600/30 flex items-center space-x-2">
+    <button type="button" onclick="openAddProductModal()" class="px-4 py-2.5 bg-kmi-600 hover:bg-kmi-700 text-white font-bold rounded-xl text-xs shadow-md shadow-kmi-600/30 flex items-center space-x-2">
       <i class='bx bx-plus-circle text-base'></i>
       <span>+ Tambah Menu Baru</span>
     </button>
@@ -22,26 +22,28 @@
 
   <!-- Search & Category Filters -->
   <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-    <form action="{{ route('umkm.products.index') }}" method="GET" class="flex-1 flex items-center gap-2 w-full">
+    <form action="{{ route('umkm.products.index') }}" method="GET" class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
       <div class="relative flex-1">
         <i class='bx bx-search absolute left-3 top-2.5 text-slate-400 text-lg'></i>
         <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama menu..."
           class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-kmi-600 focus:bg-white">
       </div>
 
-      <select name="category_id" class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700">
-        <option value="">Semua Kategori</option>
-        @foreach($categories as $cat)
-          <option value="{{ $cat->intCategory_ID }}" {{ $categoryId == $cat->intCategory_ID ? 'selected' : '' }}>
-            {{ $cat->txtCategoryName }}
-          </option>
-        @endforeach
-      </select>
+      <div class="flex items-center gap-2">
+        <select name="category_id" class="flex-1 sm:flex-none py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700">
+          <option value="">Semua Kategori</option>
+          @foreach($categories as $cat)
+            <option value="{{ $cat->intCategory_ID }}" {{ $categoryId == $cat->intCategory_ID ? 'selected' : '' }}>
+              {{ $cat->txtCategoryName }}
+            </option>
+          @endforeach
+        </select>
 
-      <button type="submit" class="px-4 py-2 bg-slate-800 text-white font-bold rounded-xl text-xs">Filter</button>
-      @if($search || $categoryId)
-        <a href="{{ route('umkm.products.index') }}" class="p-2 text-slate-400 hover:text-rose-600 text-xs">Reset</a>
-      @endif
+        <button type="submit" class="px-4 py-2 bg-slate-800 text-white font-bold rounded-xl text-xs shrink-0">Filter</button>
+        @if($search || $categoryId)
+          <a href="{{ route('umkm.products.index') }}" class="p-2 text-slate-400 hover:text-rose-600 text-xs shrink-0">Reset</a>
+        @endif
+      </div>
     </form>
   </div>
 
@@ -170,7 +172,27 @@
 
       <div>
         <label class="block text-xs font-bold text-slate-700 mb-1">Foto Produk (Opsional)</label>
-        <input type="file" name="image" accept="image/*" class="text-xs text-slate-600 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-kmi-600 file:text-white hover:file:bg-kmi-700 cursor-pointer">
+        
+        <div class="flex items-center space-x-3 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 relative shadow-inner">
+            <img id="addImgPreview" src="" alt="Preview Foto" class="w-full h-full object-cover hidden">
+            <div id="addImgPlaceholder" class="text-center p-1 text-slate-400">
+              <i class='bx bx-image-add text-2xl text-slate-300'></i>
+              <span class="block text-[9px] font-bold mt-0.5">Preview</span>
+            </div>
+          </div>
+          
+          <div class="flex-1 min-w-0">
+            <input type="file" name="image" id="addImgInput" accept="image/*" onchange="previewSelectedImage(this, 'addImgPreview', 'addImgPlaceholder', 'addImgRemoveBtn')"
+              class="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-kmi-600 file:text-white hover:file:bg-kmi-700 cursor-pointer w-full">
+            <p class="text-[10px] text-slate-400 mt-1">Format: JPG, PNG, WEBP (Maksimal 2MB).</p>
+            <button type="button" id="addImgRemoveBtn" onclick="clearSelectedImage('addImgInput', 'addImgPreview', 'addImgPlaceholder', 'addImgRemoveBtn')"
+              class="hidden text-[10px] text-rose-600 font-bold hover:underline mt-1 inline-flex items-center space-x-1">
+              <i class='bx bx-trash'></i>
+              <span>Hapus foto yang dipilih</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -236,8 +258,29 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">Ganti Foto Produk (Opsional)</label>
-        <input type="file" name="image" accept="image/*" class="text-xs text-slate-600 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-kmi-600 file:text-white hover:file:bg-kmi-700 cursor-pointer">
+        <label class="block text-xs font-bold text-slate-700 mb-1">Foto Produk</label>
+        
+        <div class="flex items-center space-x-3 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 border-slate-200 bg-white flex items-center justify-center overflow-hidden shrink-0 relative shadow-inner">
+            <img id="editImgPreview" src="" alt="Preview Foto Produk" class="w-full h-full object-cover hidden">
+            <div id="editImgPlaceholder" class="text-center p-1 text-slate-400">
+              <i class='bx bx-image-alt text-2xl text-slate-300'></i>
+              <span class="block text-[9px] font-bold mt-0.5">Belum ada foto</span>
+            </div>
+          </div>
+          
+          <div class="flex-1 min-w-0">
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Ganti Foto (Opsional):</label>
+            <input type="file" name="image" id="editImgInput" accept="image/*" onchange="previewSelectedImage(this, 'editImgPreview', 'editImgPlaceholder', 'editImgRemoveBtn')"
+              class="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-kmi-600 file:text-white hover:file:bg-kmi-700 cursor-pointer w-full">
+            <p class="text-[10px] text-slate-400 mt-1">Pilih file baru jika ingin memperbarui foto produk.</p>
+            <button type="button" id="editImgRemoveBtn" onclick="resetEditImage()"
+              class="hidden text-[10px] text-rose-600 font-bold hover:underline mt-1 inline-flex items-center space-x-1">
+              <i class='bx bx-undo'></i>
+              <span>Batal ganti foto</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -254,8 +297,73 @@
 </div>
 
 <script>
+  let currentEditOriginalImage = null;
+
   function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
   function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
+
+  function openAddProductModal() {
+    clearSelectedImage('addImgInput', 'addImgPreview', 'addImgPlaceholder', 'addImgRemoveBtn');
+    openModal('modalAddProduct');
+  }
+
+  function previewSelectedImage(input, previewId, placeholderId, removeBtnId) {
+    const preview = document.getElementById(previewId);
+    const placeholder = document.getElementById(placeholderId);
+    const removeBtn = document.getElementById(removeBtnId);
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (preview) {
+          preview.src = e.target.result;
+          preview.classList.remove('hidden');
+        }
+        if (placeholder) placeholder.classList.add('hidden');
+        if (removeBtn) removeBtn.classList.remove('hidden');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function clearSelectedImage(inputId, previewId, placeholderId, removeBtnId) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    const placeholder = document.getElementById(placeholderId);
+    const removeBtn = document.getElementById(removeBtnId);
+
+    if (input) input.value = '';
+    if (preview) {
+      preview.src = '';
+      preview.classList.add('hidden');
+    }
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (removeBtn) removeBtn.classList.add('hidden');
+  }
+
+  function resetEditImage() {
+    const input = document.getElementById('editImgInput');
+    const preview = document.getElementById('editImgPreview');
+    const placeholder = document.getElementById('editImgPlaceholder');
+    const removeBtn = document.getElementById('editImgRemoveBtn');
+
+    if (input) input.value = '';
+    if (removeBtn) removeBtn.classList.add('hidden');
+
+    if (currentEditOriginalImage) {
+      if (preview) {
+        preview.src = currentEditOriginalImage;
+        preview.classList.remove('hidden');
+      }
+      if (placeholder) placeholder.classList.add('hidden');
+    } else {
+      if (preview) {
+        preview.src = '';
+        preview.classList.add('hidden');
+      }
+      if (placeholder) placeholder.classList.remove('hidden');
+    }
+  }
 
   function editProduct(p) {
     const form = document.getElementById('editProductForm');
@@ -266,6 +374,32 @@
     document.getElementById('edit_stock').value = formatNumberWithSeparator(p.intStock || 0);
     document.getElementById('edit_unit').value = p.txtUnit || 'Pcs';
     document.getElementById('edit_description').value = p.txtDescription || '';
+
+    // Handle existing image preview
+    const preview = document.getElementById('editImgPreview');
+    const placeholder = document.getElementById('editImgPlaceholder');
+    const input = document.getElementById('editImgInput');
+    const removeBtn = document.getElementById('editImgRemoveBtn');
+
+    if (input) input.value = '';
+    if (removeBtn) removeBtn.classList.add('hidden');
+
+    if (p.txtProductImage) {
+      currentEditOriginalImage = `/storage/${p.txtProductImage}`;
+      if (preview) {
+        preview.src = currentEditOriginalImage;
+        preview.classList.remove('hidden');
+      }
+      if (placeholder) placeholder.classList.add('hidden');
+    } else {
+      currentEditOriginalImage = null;
+      if (preview) {
+        preview.src = '';
+        preview.classList.add('hidden');
+      }
+      if (placeholder) placeholder.classList.remove('hidden');
+    }
+
     openModal('modalEditProduct');
   }
 </script>

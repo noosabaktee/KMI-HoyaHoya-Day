@@ -3,10 +3,25 @@
 @section('header_title', 'Kasir POS - ' . ($merchant->txtMerchantName ?? 'Booth UMKM'))
 
 @section('content')
-<div class="h-[calc(100vh-6.5rem)] flex flex-col lg:flex-row gap-6 -m-2 sm:-m-4">
+<div class="h-[calc(100vh-4.5rem)] sm:h-[calc(100vh-5rem)] lg:h-[calc(100vh-6.5rem)] flex flex-col lg:flex-row gap-3 lg:gap-6 -m-2 sm:-m-4">
+
+  <!-- Mobile POS Segmented Tab Switcher (< lg) -->
+  <div class="flex lg:hidden bg-slate-200/90 p-1 rounded-2xl shrink-0">
+    <button type="button" onclick="switchPosView('menu')" id="btnTabMenu"
+      class="flex-1 py-2 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center space-x-1.5 transition-all bg-white text-kmi-700 shadow-sm">
+      <i class='bx bx-restaurant text-base'></i>
+      <span>Katalog Menu</span>
+    </button>
+    <button type="button" onclick="switchPosView('cart')" id="btnTabCart"
+      class="flex-1 py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition-all text-slate-600 hover:text-slate-900">
+      <i class='bx bx-cart text-base'></i>
+      <span>Keranjang & Bayar</span>
+      <span id="mobileCartBadge" class="hidden ml-1 px-1.5 py-0.2 bg-kmi-600 text-white rounded-full text-[10px] font-extrabold leading-none">0</span>
+    </button>
+  </div>
 
   <!-- Left: Product Catalog Section -->
-  <div class="flex-1 flex flex-col bg-white rounded-3xl p-5 border border-slate-100 shadow-sm overflow-hidden">
+  <div id="posMenuSection" class="flex-1 flex flex-col bg-white rounded-3xl p-3.5 sm:p-5 border border-slate-100 shadow-sm overflow-hidden">
     
     <!-- Top Filter Bar: Search & Categories -->
     <div class="space-y-3 pb-4 border-b border-slate-100">
@@ -38,9 +53,9 @@
     </div>
 
     <!-- Product Grid -->
-    <div id="productGrid" class="flex-1 overflow-y-auto pt-3 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5 content-start auto-rows-max">
+    <div id="productGrid" class="flex-1 overflow-y-auto pt-3 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-3.5 content-start auto-rows-max pb-16 lg:pb-0">
       @forelse($products as $prod)
-        <div class="product-card bg-white hover:bg-emerald-50/20 border border-slate-200/90 hover:border-kmi-600 rounded-2xl p-3 flex flex-col justify-between cursor-pointer transition-all hover:shadow-md group h-[225px]"
+        <div class="product-card bg-white hover:bg-emerald-50/20 border border-slate-200/90 hover:border-kmi-600 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between cursor-pointer transition-all hover:shadow-md group h-[215px] sm:h-[225px]"
           data-id="{{ $prod->intProduct_ID }}"
           data-name="{{ $prod->txtProductName }}"
           data-price="{{ $prod->floatPrice }}"
@@ -49,7 +64,7 @@
           onclick="addToCart({{ $prod->intProduct_ID }}, '{{ addslashes($prod->txtProductName) }}', {{ $prod->floatPrice }}, {{ $prod->intStock }})">
           
           <div>
-            <div class="w-full h-28 rounded-xl bg-slate-100 overflow-hidden relative mb-2 flex items-center justify-center">
+            <div class="w-full h-24 sm:h-28 rounded-xl bg-slate-100 overflow-hidden relative mb-2 flex items-center justify-center">
               @if($prod->txtProductImage)
                 <img src="{{ asset('storage/' . $prod->txtProductImage) }}" alt="{{ $prod->txtProductName }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='/images/menu/rice-bowl.webp'">
               @else
@@ -87,9 +102,21 @@
   </div>
 
   <!-- Right: Cart & Smart Voucher Checkout Section -->
-  <div class="w-full lg:w-96 flex flex-col bg-white rounded-3xl p-5 border border-slate-100 shadow-sm overflow-hidden">
+  <div id="posCartSection" class="hidden lg:flex w-full lg:w-96 flex-col bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm overflow-hidden">
     
-    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+    <!-- Mobile Back to Menu Header -->
+    <div class="flex lg:hidden items-center justify-between pb-3 mb-2 border-b border-slate-100">
+      <button type="button" onclick="switchPosView('menu')" class="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center space-x-1">
+        <i class='bx bx-left-arrow-alt text-base'></i>
+        <span>Pilih Menu Lain</span>
+      </button>
+      <button type="button" onclick="clearCart()" class="text-xs text-rose-600 font-bold">
+        Kosongkan
+      </button>
+    </div>
+
+    <!-- Desktop Cart Header -->
+    <div class="hidden lg:flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex items-center space-x-2">
         <i class='bx bx-cart text-xl text-kmi-600'></i>
         <h3 class="text-sm font-extrabold text-slate-900">Keranjang Belanja</h3>
@@ -234,6 +261,23 @@
 
 </div>
 
+<!-- Mobile Floating Sticky Cart Summary (< lg) -->
+<div id="mobileFloatingCartBar" class="hidden lg:hidden fixed bottom-3 left-3 right-3 z-30 bg-slate-900/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-white/10 flex items-center justify-between">
+  <div class="flex items-center space-x-2.5 min-w-0 flex-1 mr-2">
+    <div class="w-9 h-9 rounded-xl bg-kmi-600 text-white flex items-center justify-center text-lg shrink-0">
+      <i class='bx bx-shopping-bag'></i>
+    </div>
+    <div class="min-w-0">
+      <div class="text-[10px] text-slate-300 font-medium"><span id="mobileBarItemCount">0</span> Menu Dipilih</div>
+      <div id="mobileBarTotal" class="text-xs sm:text-sm font-extrabold text-white truncate">Rp 0</div>
+    </div>
+  </div>
+  <button type="button" onclick="switchPosView('cart')" class="px-4 py-2 bg-kmi-600 hover:bg-kmi-700 text-white font-extrabold rounded-xl text-xs flex items-center space-x-1 shadow-md shadow-kmi-600/30 shrink-0">
+    <span>Bayar / Scan</span>
+    <i class='bx bx-chevron-right text-base'></i>
+  </button>
+</div>
+
 <!-- Camera QR & Barcode Scanner Modal -->
 <div id="cameraModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
@@ -313,6 +357,66 @@
   let cart = [];
   let currentVoucher = null;
   let html5Scanner = null;
+  let currentMobileTab = 'menu';
+
+  function switchPosView(tab) {
+    currentMobileTab = tab;
+    const menuSec = document.getElementById('posMenuSection');
+    const cartSec = document.getElementById('posCartSection');
+    const btnMenu = document.getElementById('btnTabMenu');
+    const btnCart = document.getElementById('btnTabCart');
+    const floatBar = document.getElementById('mobileFloatingCartBar');
+
+    if (tab === 'menu') {
+      if (menuSec) {
+        menuSec.classList.remove('hidden');
+        menuSec.classList.add('flex');
+      }
+      if (cartSec) {
+        cartSec.classList.add('hidden');
+        cartSec.classList.remove('flex');
+      }
+
+      if (btnMenu) {
+        btnMenu.classList.add('bg-white', 'text-kmi-700', 'shadow-sm');
+        btnMenu.classList.remove('text-slate-600');
+      }
+      if (btnCart) {
+        btnCart.classList.remove('bg-white', 'text-kmi-700', 'shadow-sm');
+        btnCart.classList.add('text-slate-600');
+      }
+
+      if (floatBar) {
+        if (cart.length > 0) {
+          floatBar.classList.remove('hidden');
+        } else {
+          floatBar.classList.add('hidden');
+        }
+      }
+    } else {
+      if (menuSec) {
+        menuSec.classList.add('hidden');
+        menuSec.classList.remove('flex');
+      }
+      if (cartSec) {
+        cartSec.classList.remove('hidden');
+        cartSec.classList.add('flex');
+      }
+
+      if (btnCart) {
+        btnCart.classList.add('bg-white', 'text-kmi-700', 'shadow-sm');
+        btnCart.classList.remove('text-slate-600');
+      }
+      if (btnMenu) {
+        btnMenu.classList.remove('bg-white', 'text-kmi-700', 'shadow-sm');
+        btnMenu.classList.add('text-slate-600');
+      }
+
+      if (floatBar) {
+        floatBar.classList.add('hidden');
+      }
+    }
+  }
 
   function filterCategory(catId, btn) {
     document.querySelectorAll('.category-pill').forEach(el => {
@@ -368,6 +472,8 @@
     cart = [];
     removeVoucher();
     renderCart();
+    document.getElementById('mobileFloatingCartBar')?.classList.add('hidden');
+    document.getElementById('mobileCartBadge')?.classList.add('hidden');
   }
 
   function removeVoucher() {
@@ -390,6 +496,32 @@
     const list = document.getElementById('cartItemsList');
     const emptyNotice = document.getElementById('cartEmptyNotice');
     const subtotal = getSubtotal();
+
+    // Mobile badge and floating bar updates
+    const totalQty = cart.reduce((sum, i) => sum + i.quantity, 0);
+    const badge = document.getElementById('mobileCartBadge');
+    const floatBar = document.getElementById('mobileFloatingCartBar');
+    const barCount = document.getElementById('mobileBarItemCount');
+    const barTotal = document.getElementById('mobileBarTotal');
+
+    if (badge) {
+      if (totalQty > 0) {
+        badge.innerText = totalQty;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    if (floatBar && barCount && barTotal) {
+      if (totalQty > 0 && currentMobileTab === 'menu') {
+        barCount.innerText = totalQty;
+        barTotal.innerText = 'Rp ' + Number(subtotal).toLocaleString('id-ID');
+        floatBar.classList.remove('hidden');
+      } else {
+        floatBar.classList.add('hidden');
+      }
+    }
 
     if (cart.length === 0) {
       if (emptyNotice) emptyNotice.classList.remove('hidden');

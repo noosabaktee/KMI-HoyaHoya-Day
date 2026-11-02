@@ -43,7 +43,7 @@
   </div>
 
   <!-- Filter Pills -->
-  <div class="flex items-center space-x-2 border-b border-slate-200 pb-3">
+  <div class="flex items-center space-x-2 border-b border-slate-200 pb-3 overflow-x-auto no-scrollbar">
     <a href="{{ route('umkm.sales.index') }}" class="px-3 py-1.5 rounded-xl text-xs font-bold {{ empty($paymentType) ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
       Semua Penjualan
     </a>
