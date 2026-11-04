@@ -298,6 +298,124 @@
   </div>
 </div>
 
+<style>
+@keyframes checkmark-circle {
+  0% { stroke-dashoffset: 150; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes checkmark-check {
+  0% { stroke-dashoffset: 48; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes checkmark-scale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+.animate-check-circle {
+  stroke-dasharray: 150;
+  stroke-dashoffset: 150;
+  animation: checkmark-circle 0.5s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+.animate-check-mark {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmark-check 0.35s cubic-bezier(0.65, 0, 0.45, 1) 0.45s forwards;
+}
+.animate-check-wrap {
+  animation: checkmark-scale 0.3s ease-in-out 0.8s both;
+}
+
+/* Confetti Burst Keyframes */
+@keyframes confetti-burst {
+  0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: translate(var(--tw-cx), var(--tw-cy)) scale(1) rotate(var(--tw-crot)); opacity: 0; }
+}
+.confetti {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: confetti-burst 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+.c1 { background: #10b981; --tw-cx: -75px; --tw-cy: -65px; --tw-crot: 140deg; }
+.c2 { background: #059669; --tw-cx: 75px;  --tw-cy: -70px; --tw-crot: -120deg; }
+.c3 { background: #f59e0b; --tw-cx: -100px; --tw-cy: -15px; --tw-crot: 210deg; width: 6px; height: 12px; }
+.c4 { background: #3b82f6; --tw-cx: 95px;  --tw-cy: -20px; --tw-crot: -180deg; width: 6px; height: 10px; }
+.c5 { background: #ec4899; --tw-cx: -55px; --tw-cy: 60px;  --tw-crot: 90deg; }
+.c6 { background: #8b5cf6; --tw-cx: 60px;  --tw-cy: 65px;  --tw-crot: -90deg; width: 10px; height: 6px; }
+.c7 { background: #14b8a6; --tw-cx: -30px; --tw-cy: -85px; --tw-crot: 60deg; }
+.c8 { background: #f97316; --tw-cx: 35px;  --tw-cy: -90px; --tw-crot: -45deg; width: 7px; height: 7px; border-radius: 50%; }
+.c9 { background: #eab308; --tw-cx: -85px; --tw-cy: 25px;  --tw-crot: 160deg; }
+.c10 { background: #06b6d4; --tw-cx: 80px;  --tw-cy: 30px;  --tw-crot: -150deg; width: 6px; height: 9px; }
+</style>
+
+<!-- Checkout Success Celebration Pop-up Modal -->
+<div id="checkoutSuccessModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
+  <div id="checkoutSuccessCard" class="bg-white/95 backdrop-blur-xl border border-white/60 rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl relative text-center overflow-hidden transform transition-all duration-300 scale-90 opacity-0">
+    
+    <!-- Ambient glow halo -->
+    <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-gradient-to-tr from-emerald-500/20 to-teal-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+    <!-- Animated Confetti Particles -->
+    <div class="confetti-container absolute inset-0 pointer-events-none overflow-hidden">
+      <div class="confetti c1"></div>
+      <div class="confetti c2"></div>
+      <div class="confetti c3"></div>
+      <div class="confetti c4"></div>
+      <div class="confetti c5"></div>
+      <div class="confetti c6"></div>
+      <div class="confetti c7"></div>
+      <div class="confetti c8"></div>
+      <div class="confetti c9"></div>
+      <div class="confetti c10"></div>
+    </div>
+
+    <!-- Animated Checkmark SVG -->
+    <div class="relative w-20 h-20 mx-auto mb-3 flex items-center justify-center">
+      <div class="absolute inset-0 bg-emerald-100 rounded-full animate-ping opacity-25"></div>
+      <svg class="w-16 h-16 relative text-kmi-600 animate-check-wrap" viewBox="0 0 52 52">
+        <circle class="animate-check-circle stroke-kmi-600" cx="26" cy="26" r="23" fill="none" stroke-width="3" stroke-miterlimit="10"/>
+        <path class="animate-check-mark stroke-kmi-600" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M14.5 27.2l7.1 7.2 16.7-16.8"/>
+      </svg>
+    </div>
+
+    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-kmi-800 tracking-wider uppercase shadow-xs">
+      <i class='bx bx-check-double text-xs'></i> Transaksi Sukses
+    </span>
+
+    <h2 class="text-xl font-black text-slate-900 mt-2 tracking-tight">Pembayaran Berhasil!</h2>
+    <p class="text-xs text-slate-500 mt-0.5">Pesanan telah dicatat oleh sistem</p>
+
+    <!-- Highlighted Amount Card -->
+    <div class="my-4 py-3 px-4 rounded-2xl bg-gradient-to-br from-emerald-50/80 to-teal-50/60 border border-emerald-100/80">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Transaksi</div>
+      <div id="successAnimTotal" class="text-2xl font-black text-kmi-700 tracking-tight mt-0.5">Rp 0</div>
+      <div id="successAnimMethod" class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-white/90 rounded-full text-[11px] font-bold text-slate-700 shadow-xs">
+        <i class='bx bx-check-circle text-kmi-600'></i> <span>VOUCHER</span>
+      </div>
+    </div>
+
+    <!-- Auto-transition Progress Bar -->
+    <div class="space-y-1.5 mt-3">
+      <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+        <div id="successAnimProgressBar" class="h-full bg-kmi-600 rounded-full transition-all duration-[3000ms] ease-out w-0"></div>
+      </div>
+      <p class="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+        <i class='bx bx-time text-xs'></i>
+        <span>Membuka struk kasir otomatis...</span>
+      </p>
+    </div>
+
+    <button type="button" onclick="showInvoiceNow()" class="mt-3.5 w-full py-2.5 bg-kmi-600 hover:bg-kmi-700 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow-md shadow-kmi-600/30 transition-colors">
+      <span>Lihat & Cetak Nota</span>
+      <i class='bx bx-right-arrow-alt text-base'></i>
+    </button>
+  </div>
+</div>
+
 <!-- Receipt Modal on Success -->
 <div id="receiptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center">
@@ -784,29 +902,15 @@
         throw new Error(data.message || 'Gagal memproses transaksi.');
       }
 
-      // Success modal
-      const sale = data.sale;
-      document.getElementById('receiptInv').innerText = sale.invoice_number + ' • ' + sale.time;
-      document.getElementById('receiptCustomer').innerText = sale.employee_name;
-      document.getElementById('receiptMethod').innerText = sale.payment_type;
-      document.getElementById('receiptTotal').innerText = 'Rp ' + Number(sale.total_amount).toLocaleString('id-ID');
-      document.getElementById('receiptVoucherCut').innerText = 'Rp ' + Number(sale.voucher_amount).toLocaleString('id-ID');
-      document.getElementById('receiptCashPaid').innerText = 'Rp ' + Number(sale.cash_amount).toLocaleString('id-ID');
-      document.getElementById('receiptChange').innerText = 'Rp ' + Number(sale.change_amount).toLocaleString('id-ID');
-
-      if (sale.voucher_remaining !== null) {
-        document.getElementById('receiptVoucherBalanceRow').classList.remove('hidden');
-        document.getElementById('receiptVoucherBalance').innerText = 'Rp ' + Number(sale.voucher_remaining).toLocaleString('id-ID');
-      } else {
-        document.getElementById('receiptVoucherBalanceRow').classList.add('hidden');
-      }
-
-      document.getElementById('btnReceiptPrint').href = `/umkm/pos/receipt/${sale.id}`;
-      document.getElementById('receiptModal').classList.remove('hidden');
+      // Trigger Success Celebration Animation before Invoice
+      triggerSuccessAnimation(data.sale);
 
       // Clear Cart
       clearCart();
       document.getElementById('cashGivenInput').value = '';
+
+      // Kembali lagi ke katalog menu untuk transaksi berikutnya
+      switchPosView('menu');
     } catch (e) {
       alert("Error: " + e.message);
     } finally {
@@ -815,8 +919,89 @@
     }
   }
 
+  let successTimer = null;
+
+  function triggerSuccessAnimation(sale) {
+    // Populate Receipt Details for later
+    document.getElementById('receiptInv').innerText = sale.invoice_number + ' • ' + sale.time;
+    document.getElementById('receiptCustomer').innerText = sale.employee_name;
+    document.getElementById('receiptMethod').innerText = sale.payment_type;
+    document.getElementById('receiptTotal').innerText = 'Rp ' + Number(sale.total_amount).toLocaleString('id-ID');
+    document.getElementById('receiptVoucherCut').innerText = 'Rp ' + Number(sale.voucher_amount).toLocaleString('id-ID');
+    document.getElementById('receiptCashPaid').innerText = 'Rp ' + Number(sale.cash_amount).toLocaleString('id-ID');
+    document.getElementById('receiptChange').innerText = 'Rp ' + Number(sale.change_amount).toLocaleString('id-ID');
+
+    if (sale.voucher_remaining !== null) {
+      document.getElementById('receiptVoucherBalanceRow').classList.remove('hidden');
+      document.getElementById('receiptVoucherBalance').innerText = 'Rp ' + Number(sale.voucher_remaining).toLocaleString('id-ID');
+    } else {
+      document.getElementById('receiptVoucherBalanceRow').classList.add('hidden');
+    }
+
+    document.getElementById('btnReceiptPrint').href = `/umkm/pos/receipt/${sale.id}`;
+
+    // Populate Success Animation Pop-up
+    document.getElementById('successAnimTotal').innerText = 'Rp ' + Number(sale.total_amount).toLocaleString('id-ID');
+    document.getElementById('successAnimMethod').innerHTML = `
+      <i class='bx bx-check-circle text-kmi-600'></i>
+      <span>${sale.payment_type}</span>
+      <span class="text-slate-300">•</span>
+      <span class="truncate max-w-[130px]">${sale.employee_name || 'Pelanggan'}</span>
+    `;
+
+    const modal = document.getElementById('checkoutSuccessModal');
+    const card = document.getElementById('checkoutSuccessCard');
+    const progress = document.getElementById('successAnimProgressBar');
+
+    // Reset styles
+    progress.style.width = '0%';
+    modal.classList.remove('hidden');
+
+    // Re-trigger SVG animations
+    const checkWrap = card.querySelector('.animate-check-wrap');
+    if (checkWrap) {
+      checkWrap.classList.remove('animate-check-wrap');
+      void checkWrap.offsetWidth;
+      checkWrap.classList.add('animate-check-wrap');
+    }
+
+    // Smooth entrance
+    requestAnimationFrame(() => {
+      card.classList.remove('scale-90', 'opacity-0');
+      card.classList.add('scale-100', 'opacity-100');
+      setTimeout(() => {
+        progress.style.width = '100%';
+      }, 50);
+    });
+
+    // Auto transition to receiptModal after 3.2 seconds
+    if (successTimer) clearTimeout(successTimer);
+    successTimer = setTimeout(() => {
+      showInvoiceNow();
+    }, 3200);
+  }
+
+  function showInvoiceNow() {
+    if (successTimer) {
+      clearTimeout(successTimer);
+      successTimer = null;
+    }
+    const modal = document.getElementById('checkoutSuccessModal');
+    const card = document.getElementById('checkoutSuccessCard');
+    
+    card.classList.remove('scale-100', 'opacity-100');
+    card.classList.add('scale-95', 'opacity-0');
+
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      document.getElementById('receiptModal').classList.remove('hidden');
+    }, 200);
+  }
+
   function closeReceiptModal() {
     document.getElementById('receiptModal').classList.add('hidden');
+    // Kembali lagi ke katalog menu
+    switchPosView('menu');
   }
 </script>
 @endpush

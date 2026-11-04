@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ClaimController as AdminClaimController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DocController as AdminDocController;
+use App\Http\Controllers\Admin\MasterDataController as AdminMasterDataController;
 use App\Http\Controllers\Admin\MerchantController as AdminMerchantController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\VoucherController as AdminVoucherController;
@@ -53,9 +54,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.admin'])->grou
     Route::get('/vouchers', [AdminVoucherController::class, 'index'])->name('vouchers.index');
     Route::post('/vouchers/single', [AdminVoucherController::class, 'storeSingle'])->name('vouchers.single');
     Route::post('/vouchers/bulk', [AdminVoucherController::class, 'storeBulk'])->name('vouchers.bulk');
+    Route::put('/vouchers/{id}', [AdminVoucherController::class, 'update'])->name('vouchers.update');
+    Route::delete('/vouchers/{id}', [AdminVoucherController::class, 'destroy'])->name('vouchers.destroy');
     Route::post('/vouchers/{id}/resend-wa', [AdminVoucherController::class, 'resendWhatsApp'])->name('vouchers.resend-wa');
     Route::post('/vouchers/{id}/activate', [AdminVoucherController::class, 'activateManual'])->name('vouchers.activate');
     Route::get('/vouchers/template', [AdminVoucherController::class, 'downloadTemplate'])->name('vouchers.template');
+
+    // Master Data Management (Department, Category, Unit)
+    Route::get('/master', [AdminMasterDataController::class, 'index'])->name('master.index');
+    Route::post('/master/departments', [AdminMasterDataController::class, 'storeDepartment'])->name('master.departments.store');
+    Route::put('/master/departments/{id}', [AdminMasterDataController::class, 'updateDepartment'])->name('master.departments.update');
+    Route::delete('/master/departments/{id}', [AdminMasterDataController::class, 'destroyDepartment'])->name('master.departments.destroy');
+
+    Route::post('/master/categories', [AdminMasterDataController::class, 'storeCategory'])->name('master.categories.store');
+    Route::put('/master/categories/{id}', [AdminMasterDataController::class, 'updateCategory'])->name('master.categories.update');
+    Route::delete('/master/categories/{id}', [AdminMasterDataController::class, 'destroyCategory'])->name('master.categories.destroy');
+
+    Route::post('/master/units', [AdminMasterDataController::class, 'storeUnit'])->name('master.units.store');
+    Route::put('/master/units/{id}', [AdminMasterDataController::class, 'updateUnit'])->name('master.units.update');
+    Route::delete('/master/units/{id}', [AdminMasterDataController::class, 'destroyUnit'])->name('master.units.destroy');
 
     // Claims Management
     Route::get('/claims', [AdminClaimController::class, 'index'])->name('claims.index');

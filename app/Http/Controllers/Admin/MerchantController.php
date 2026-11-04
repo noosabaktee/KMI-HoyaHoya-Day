@@ -48,12 +48,20 @@ class MerchantController extends Controller
 
         $code = 'UMKM-' . str_pad(Merchant::count() + 1, 3, '0', STR_PAD_LEFT);
 
+        // Auto-generate Booth Number behind the scenes if not explicitly given
+        $boothCount = Merchant::count() + 1;
+        $autoBoothNumber = 'Booth ' . sprintf('A-%02d', $boothCount);
+        while (Merchant::where('txtBoothNumber', $autoBoothNumber)->exists()) {
+            $boothCount++;
+            $autoBoothNumber = 'Booth ' . sprintf('A-%02d', $boothCount);
+        }
+
         $merchant = Merchant::create([
             'txtMerchantCode' => $code,
             'txtMerchantName' => $validated['merchant_name'],
             'txtOwnerName' => $validated['owner_name'],
             'txtPhone' => $validated['phone'],
-            'txtBoothNumber' => $validated['booth_number'] ?? 'Stand Baru',
+            'txtBoothNumber' => !empty($validated['booth_number']) ? $validated['booth_number'] : $autoBoothNumber,
             'txtCategory' => $validated['category'] ?? 'Kuliner',
             'txtDescription' => $validated['description'] ?? null,
             'txtBankName' => $validated['bank_name'] ?? null,

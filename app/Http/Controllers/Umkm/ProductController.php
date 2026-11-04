@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\LogActivity;
 use App\Models\Product;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -35,11 +36,19 @@ class ProductController extends Controller
 
         $products = $query->orderBy('txtProductName')->paginate(12)->withQueryString();
 
-        $categories = Category::where('intMerchant_ID', $merchant->intMerchant_ID)
+        $categories = Category::where(function ($q) use ($merchant) {
+                $q->whereNull('intMerchant_ID')
+                  ->orWhere('intMerchant_ID', $merchant->intMerchant_ID);
+            })
             ->where('bitActive', 1)
+            ->orderBy('txtCategoryName')
             ->get();
 
-        return view('umkm.products.index', compact('products', 'categories', 'merchant', 'search', 'categoryId'));
+        $units = Unit::where('bitActive', 1)
+            ->orderBy('txtUnitName')
+            ->get();
+
+        return view('umkm.products.index', compact('products', 'categories', 'units', 'merchant', 'search', 'categoryId'));
     }
 
     public function store(Request $request)
@@ -58,26 +67,15 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'product_name' => 'required|string|max:150',
-            'category_id' => 'nullable|integer',
+            'category_id' => 'required|integer|exists:mCategory,intCategory_ID',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'unit' => 'nullable|string|max:30',
+            'unit' => 'required|string|max:30',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
-            'new_category' => 'nullable|string|max:100',
         ]);
 
-        $categoryId = $validated['category_id'] ?? null;
-        if (!empty($validated['new_category'])) {
-            $cat = Category::firstOrCreate([
-                'intMerchant_ID' => $merchant->intMerchant_ID,
-                'txtCategoryName' => trim($validated['new_category']),
-            ], [
-                'txtCategorySlug' => Str::slug($validated['new_category']),
-                'bitActive' => 1,
-            ]);
-            $categoryId = $cat->intCategory_ID;
-        }
+        $categoryId = $validated['category_id'];
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -93,7 +91,7 @@ class ProductController extends Controller
             'txtProductName' => $validated['product_name'],
             'floatPrice' => $validated['price'],
             'intStock' => $validated['stock'],
-            'txtUnit' => $validated['unit'] ?? 'Pcs',
+            'txtUnit' => $validated['unit'],
             'txtProductImage' => $imagePath,
             'txtDescription' => $validated['description'] ?? null,
             'bitActive' => 1,
@@ -122,10 +120,10 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'product_name' => 'required|string|max:150',
-            'category_id' => 'nullable|integer',
+            'category_id' => 'required|integer|exists:mCategory,intCategory_ID',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'unit' => 'nullable|string|max:30',
+            'unit' => 'required|string|max:30',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
         ]);
@@ -139,11 +137,11 @@ class ProductController extends Controller
         }
 
         $product->update([
-            'intCategory_ID' => $validated['category_id'] ?? null,
+            'intCategory_ID' => $validated['category_id'],
             'txtProductName' => $validated['product_name'],
             'floatPrice' => $validated['price'],
             'intStock' => $validated['stock'],
-            'txtUnit' => $validated['unit'] ?? 'Pcs',
+            'txtUnit' => $validated['unit'],
             'txtProductImage' => $imagePath,
             'txtDescription' => $validated['description'] ?? null,
         ]);

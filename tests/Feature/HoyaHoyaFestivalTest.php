@@ -184,9 +184,11 @@ class HoyaHoyaFestivalTest extends TestCase
         // 2. UMKM creates product with separator price "35.000" and stock "150"
         $cashier = User::where('txtUsername', 'umkm_siti')->first();
         $this->actingAs($cashier);
+        $category = \App\Models\Category::first();
 
         $resProd = $this->post('/umkm/products', [
             'product_name' => 'Menu Separator Test',
+            'category_id' => $category->intCategory_ID,
             'price' => '35.000',
             'stock' => '150',
             'unit' => 'Porsi',
@@ -212,5 +214,141 @@ class HoyaHoyaFestivalTest extends TestCase
                 'change_amount' => 15000,
             ],
         ]);
+    }
+
+    public function test_master_data_department_unit_and_categories_seeded(): void
+    {
+        $this->assertDatabaseHas('mDepartment', ['txtDepartmentName' => 'Manufacturing']);
+        $this->assertDatabaseHas('mDepartment', ['txtDepartmentName' => 'Development & Planning']);
+        $this->assertDatabaseHas('mDepartment', ['txtDepartmentName' => 'Business Development Analysis']);
+        $this->assertDatabaseHas('mDepartment', ['txtDepartmentName' => 'Human Capital']);
+
+        $this->assertDatabaseHas('mUnit', ['txtUnitName' => 'Pcs']);
+        $this->assertDatabaseHas('mUnit', ['txtUnitName' => 'Porsi']);
+        $this->assertDatabaseHas('mUnit', ['txtUnitName' => 'Cup']);
+
+        $this->assertDatabaseHas('mCategory', ['txtCategoryName' => 'Makanan Utama', 'intMerchant_ID' => null]);
+    }
+
+    public function test_admin_creating_merchant_auto_generates_booth_number_behind_the_scenes(): void
+    {
+        $admin = User::where('txtUsername', 'admin')->first();
+        $this->actingAs($admin);
+
+        $res = $this->post('/admin/merchants', [
+            'merchant_name' => 'Bakso Mas Gareng',
+            'owner_name' => 'Gareng',
+            'phone' => '6281299988811',
+            'username' => 'umkm_gareng',
+            'password' => 'secret123',
+        ]);
+
+        $res->assertSessionHas('success');
+        $merchant = Merchant::where('txtMerchantName', 'Bakso Mas Gareng')->first();
+        $this->assertNotNull($merchant);
+        $this->assertStringStartsWith('Booth A-', $merchant->txtBoothNumber);
+    }
+
+    public function test_admin_can_crud_master_departments_categories_and_units(): void
+    {
+        $admin = User::where('txtUsername', 'admin')->first();
+        $this->actingAs($admin);
+
+        // 1. Department CRUD
+        $createDeptRes = $this->post('/admin/master/departments', [
+            'department_code' => 'FIN',
+            'department_name' => 'Finance & Accounting',
+            'active' => 1,
+        ]);
+        $createDeptRes->assertSessionHas('success');
+        $this->assertDatabaseHas('mDepartment', ['txtDepartmentCode' => 'FIN', 'txtDepartmentName' => 'Finance & Accounting']);
+
+        $dept = \App\Models\Department::where('txtDepartmentCode', 'FIN')->first();
+        $updateDeptRes = $this->put("/admin/master/departments/{$dept->intDepartment_ID}", [
+            'department_code' => 'FIN-ACC',
+            'department_name' => 'Finance Accounting & Tax',
+            'active' => 1,
+        ]);
+        $updateDeptRes->assertSessionHas('success');
+        $this->assertDatabaseHas('mDepartment', ['txtDepartmentCode' => 'FIN-ACC']);
+
+        $deleteDeptRes = $this->delete("/admin/master/departments/{$dept->intDepartment_ID}");
+        $deleteDeptRes->assertSessionHas('success');
+        $this->assertDatabaseMissing('mDepartment', ['intDepartment_ID' => $dept->intDepartment_ID]);
+
+        // 2. Category CRUD
+        $createCatRes = $this->post('/admin/master/categories', [
+            'category_name' => 'Kudapan Tradisional',
+            'active' => 1,
+        ]);
+        $createCatRes->assertSessionHas('success');
+        $this->assertDatabaseHas('mCategory', ['txtCategoryName' => 'Kudapan Tradisional', 'intMerchant_ID' => null]);
+
+        $cat = \App\Models\Category::where('txtCategoryName', 'Kudapan Tradisional')->first();
+        $updateCatRes = $this->put("/admin/master/categories/{$cat->intCategory_ID}", [
+            'category_name' => 'Kudapan & Jajanan Pasar',
+            'active' => 1,
+        ]);
+        $updateCatRes->assertSessionHas('success');
+        $this->assertDatabaseHas('mCategory', ['txtCategoryName' => 'Kudapan & Jajanan Pasar']);
+
+        $deleteCatRes = $this->delete("/admin/master/categories/{$cat->intCategory_ID}");
+        $deleteCatRes->assertSessionHas('success');
+        $this->assertDatabaseMissing('mCategory', ['intCategory_ID' => $cat->intCategory_ID]);
+
+        // 3. Unit CRUD
+        $createUnitRes = $this->post('/admin/master/units', [
+            'unit_code' => 'KOTAK',
+            'unit_name' => 'Kotak',
+            'active' => 1,
+        ]);
+        $createUnitRes->assertSessionHas('success');
+        $this->assertDatabaseHas('mUnit', ['txtUnitCode' => 'KOTAK', 'txtUnitName' => 'Kotak']);
+
+        $unit = \App\Models\Unit::where('txtUnitCode', 'KOTAK')->first();
+        $updateUnitRes = $this->put("/admin/master/units/{$unit->intUnit_ID}", [
+            'unit_code' => 'KTK',
+            'unit_name' => 'Kotak Kecil',
+            'active' => 1,
+        ]);
+        $updateUnitRes->assertSessionHas('success');
+        $this->assertDatabaseHas('mUnit', ['txtUnitCode' => 'KTK']);
+
+        $deleteUnitRes = $this->delete("/admin/master/units/{$unit->intUnit_ID}");
+        $deleteUnitRes->assertSessionHas('success');
+        $this->assertDatabaseMissing('mUnit', ['intUnit_ID' => $unit->intUnit_ID]);
+    }
+
+    public function test_admin_can_update_and_delete_vouchers(): void
+    {
+        $admin = User::where('txtUsername', 'admin')->first();
+        $this->actingAs($admin);
+
+        // Employee '52345' Humaira has voucher without prior transactions
+        $employee = Employee::where('txtEmployeeNik', '52345')->first();
+        $this->assertNotNull($employee);
+
+        // 1. Update Voucher
+        $updateRes = $this->put("/admin/vouchers/{$employee->intEmployee_ID}", [
+            'nik' => '52345',
+            'name' => 'Humaira Zahra S.Kom',
+            'phone' => '6281234567894',
+            'department' => 'Human Capital',
+            'current_balance' => '75.000',
+            'initial_balance' => '75.000',
+            'status' => 'Aktif',
+        ]);
+
+        $updateRes->assertSessionHas('success');
+        $employee->refresh();
+        $this->assertEquals('Humaira Zahra S.Kom', $employee->txtEmployeeName);
+        $this->assertEquals(75000, $employee->voucher->floatCurrentBalance);
+        $this->assertEquals('Aktif', $employee->voucher->txtStatus);
+
+        // 2. Delete Voucher
+        $deleteRes = $this->delete("/admin/vouchers/{$employee->intEmployee_ID}");
+        $deleteRes->assertSessionHas('success');
+        $this->assertDatabaseMissing('mEmployee', ['intEmployee_ID' => $employee->intEmployee_ID]);
+        $this->assertDatabaseMissing('mVoucher', ['intEmployee_ID' => $employee->intEmployee_ID]);
     }
 }

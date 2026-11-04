@@ -41,6 +41,11 @@
           <span>Laporan Festival</span>
         </a>
 
+        <a href="{{ route('admin.master.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-colors {{ request()->routeIs('admin.master.*') ? 'bg-kmi-600 text-white shadow-sm shadow-kmi-600/30' : 'text-slate-600 hover:bg-slate-100' }}">
+          <i class='bx bx-data text-xl'></i>
+          <span>Master Data</span>
+        </a>
+
         <div class="px-3 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Pusat Informasi</div>
 
         <a href="{{ route('admin.docs.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-colors {{ request()->routeIs('admin.docs.*') ? 'bg-festive-500 text-white shadow-sm shadow-festive-500/30' : 'text-slate-700 bg-amber-50 hover:bg-amber-100 border border-amber-200' }}">

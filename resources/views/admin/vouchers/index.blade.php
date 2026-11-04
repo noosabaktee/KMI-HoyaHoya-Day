@@ -176,6 +176,21 @@
                       </button>
                     </form>
                   @endif
+
+                  <!-- Edit Voucher Button -->
+                  <button type="button" onclick="editVoucher({{ json_encode($emp) }}, {{ json_encode($v) }})"
+                    class="p-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-lg text-xs" title="Edit Voucher & Karyawan">
+                    <i class='bx bx-edit text-base'></i>
+                  </button>
+
+                  <!-- Delete Voucher Button -->
+                  <form action="{{ route('admin.vouchers.destroy', $emp->intEmployee_ID) }}" method="POST" onsubmit="return confirm('Hapus voucher dan karyawan {{ $emp->txtEmployeeName }}?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs" title="Hapus Voucher">
+                      <i class='bx bx-trash text-base'></i>
+                    </button>
+                  </form>
                 </div>
               </td>
             </tr>
@@ -243,7 +258,12 @@
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Departemen / Divisi</label>
-          <input type="text" name="department" placeholder="Contoh: Engineering" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-kmi-600 focus:bg-white">
+          <select name="department" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
+            <option value="">Pilih Departemen...</option>
+            @foreach($departments as $dept)
+              <option value="{{ $dept->txtDepartmentName }}">{{ $dept->txtDepartmentName }}</option>
+            @endforeach
+          </select>
         </div>
       </div>
 
@@ -351,6 +371,95 @@
   </div>
 </div>
 
+<!-- Modal 4: Edit Voucher & Karyawan -->
+<div id="modalEditVoucher" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+      <div>
+        <h3 class="text-base font-extrabold text-slate-900">Edit Data Voucher & Karyawan</h3>
+        <p class="text-xs text-slate-500" id="editVoucherSub">Sesuaikan identitas penerima atau nominal saldo voucher</p>
+      </div>
+      <button type="button" onclick="closeModal('modalEditVoucher')" class="p-1 text-slate-400 hover:text-slate-700">
+        <i class='bx bx-x text-2xl'></i>
+      </button>
+    </div>
+
+    <form id="formEditVoucher" action="" method="POST" class="space-y-4">
+      @csrf
+      @method('PUT')
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">NIK Karyawan *</label>
+          <input type="text" name="nik" id="edit_nik" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap *</label>
+          <input type="text" name="name" id="edit_name" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp *</label>
+          <input type="text" name="phone" id="edit_phone" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Departemen / Divisi</label>
+          <select name="department" id="edit_department" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
+            <option value="">Pilih Departemen...</option>
+            @foreach($departments as $dept)
+              <option value="{{ $dept->txtDepartmentName }}">{{ $dept->txtDepartmentName }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Sisa Saldo Saat Ini (Rp) *</label>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-xs font-bold text-slate-400">Rp</span>
+            <input type="text" inputmode="numeric" name="current_balance" id="edit_current_balance" required class="number-separator w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-kmi-600 focus:bg-white">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Saldo Awal (Rp)</label>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-xs font-bold text-slate-400">Rp</span>
+            <input type="text" name="initial_balance" id="edit_initial_balance" readonly tabindex="-1" class="number-separator w-full pl-9 pr-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 cursor-not-allowed focus:outline-none">
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">Saldo awal bersifat tetap (read-only)</p>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Status Voucher *</label>
+        <select name="status" id="edit_status" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
+          <option value="Dibuat">Dibuat (Belum Dikirim)</option>
+          <option value="Terkirim">Terkirim (Menunggu Konfirmasi WA)</option>
+          <option value="Aktif">Aktif (Siap Belanja di Booth)</option>
+          <option value="Habis">Habis (Saldo 0)</option>
+        </select>
+      </div>
+
+      <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-[11px] text-slate-500">
+        <i class='bx bx-info-circle text-kmi-600 mr-1'></i>
+        Jika nama, NIK, atau saldo diubah, kartu QRIS/barcode voucher otomatis digenerate ulang.
+      </div>
+
+      <div class="pt-2 flex justify-end space-x-2">
+        <button type="button" onclick="closeModal('modalEditVoucher')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">
+          Batal
+        </button>
+        <button type="submit" class="px-5 py-2.5 bg-kmi-600 hover:bg-kmi-700 text-white font-bold rounded-xl text-xs shadow-md shadow-kmi-600/30">
+          Simpan Perubahan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   function openModal(id) {
     document.getElementById(id)?.classList.remove('hidden');
@@ -367,6 +476,29 @@
     dlBtn.href = url;
     dlBtn.download = `Voucher_KMI_${name.replace(/\s+/g, '_')}.png`;
     openModal('modalPreviewCard');
+  }
+
+  function editVoucher(emp, v) {
+    const form = document.getElementById('formEditVoucher');
+    form.action = `/admin/vouchers/${emp.intEmployee_ID}`;
+    document.getElementById('edit_nik').value = emp.txtEmployeeNik || '';
+    document.getElementById('edit_name').value = emp.txtEmployeeName || '';
+    document.getElementById('edit_phone').value = emp.txtEmployeePhone || '';
+    document.getElementById('edit_department').value = emp.txtDepartment || '';
+    
+    if (v) {
+      document.getElementById('edit_current_balance').value = formatNumberWithSeparator(v.floatCurrentBalance || 0);
+      document.getElementById('edit_initial_balance').value = formatNumberWithSeparator(v.floatInitialBalance || 0);
+      document.getElementById('edit_status').value = v.txtStatus || 'Dibuat';
+      document.getElementById('editVoucherSub').innerText = `Kode Voucher: ${v.txtVoucherCode}`;
+    } else {
+      document.getElementById('edit_current_balance').value = '50.000';
+      document.getElementById('edit_initial_balance').value = '50.000';
+      document.getElementById('edit_status').value = 'Dibuat';
+      document.getElementById('editVoucherSub').innerText = 'Karyawan belum memiliki voucher';
+    }
+
+    openModal('modalEditVoucher');
   }
 </script>
 @endsection

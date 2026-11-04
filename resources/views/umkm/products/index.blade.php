@@ -138,8 +138,8 @@
 
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
-          <select name="category_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Kategori *</label>
+          <select name="category_id" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
             <option value="">Pilih Kategori...</option>
             @foreach($categories as $cat)
               <option value="{{ $cat->intCategory_ID }}">{{ $cat->txtCategoryName }}</option>
@@ -147,12 +147,17 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Atau Kategori Baru</label>
-          <input type="text" name="new_category" placeholder="Buat kategori baru..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Satuan *</label>
+          <select name="unit" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
+            <option value="">Pilih Satuan...</option>
+            @foreach($units as $u)
+              <option value="{{ $u->txtUnitName }}" {{ $u->txtUnitName === 'Porsi' ? 'selected' : '' }}>{{ $u->txtUnitName }}</option>
+            @endforeach
+          </select>
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Harga (Rp) *</label>
           <div class="relative">
@@ -163,10 +168,6 @@
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Stok Awal *</label>
           <input type="text" inputmode="numeric" name="stock" required value="50" class="number-separator w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-kmi-600 focus:bg-white">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Satuan</label>
-          <input type="text" name="unit" value="Porsi" placeholder="Porsi/Cup/Pcs" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-kmi-600 focus:bg-white">
         </div>
       </div>
 
@@ -229,8 +230,8 @@
 
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
-          <select name="category_id" id="edit_category_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Kategori *</label>
+          <select name="category_id" id="edit_category_id" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
             <option value="">Pilih Kategori...</option>
             @foreach($categories as $cat)
               <option value="{{ $cat->intCategory_ID }}">{{ $cat->txtCategoryName }}</option>
@@ -238,8 +239,13 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Satuan</label>
-          <input type="text" name="unit" id="edit_unit" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Satuan *</label>
+          <select name="unit" id="edit_unit" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
+            <option value="">Pilih Satuan...</option>
+            @foreach($units as $u)
+              <option value="{{ $u->txtUnitName }}">{{ $u->txtUnitName }}</option>
+            @endforeach
+          </select>
         </div>
       </div>
 

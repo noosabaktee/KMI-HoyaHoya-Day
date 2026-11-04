@@ -23,6 +23,13 @@ class DatabaseSeeder extends Seeder
     {
         $barcodeService = app(BarcodeService::class);
 
+        // Seed Master Data
+        $this->call([
+            DepartmentSeeder::class,
+            CategorySeeder::class,
+            UnitSeeder::class,
+        ]);
+
         // 1. Initial Settings
         Setting::setVal('festival_name', 'Hoya-Hoya Day Festival 2026', 'Nama Acara Festival KMI');
         Setting::setVal('company_name', 'PT Kalbe Morinaga Indonesia', 'Nama Perusahaan Penyelenggara');

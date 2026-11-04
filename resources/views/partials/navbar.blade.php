@@ -66,6 +66,10 @@
             <i class='bx bx-line-chart text-lg'></i>
             <span>Laporan Festival</span>
           </a>
+          <a href="{{ route('admin.master.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-700 hover:bg-slate-100">
+            <i class='bx bx-data text-lg'></i>
+            <span>Master Data</span>
+          </a>
           <a href="{{ route('admin.docs.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-semibold text-sm bg-amber-50 text-amber-900 border border-amber-200">
             <i class='bx bx-book-open text-lg text-amber-600'></i>
             <span>Dokumentasi Sistem</span>

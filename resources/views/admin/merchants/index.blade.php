@@ -118,14 +118,12 @@
     <form action="{{ route('admin.merchants.store') }}" method="POST" class="space-y-4">
       @csrf
 
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Toko / UMKM *</label>
-          <input type="text" name="merchant_name" required placeholder="Contoh: Dapur Bu Siti" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Stand / Booth *</label>
-          <input type="text" name="booth_number" required placeholder="Contoh: Booth A-01" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Toko / UMKM *</label>
+        <input type="text" name="merchant_name" required placeholder="Contoh: Dapur Bu Siti" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+        <div class="flex items-center space-x-1.5 mt-1.5 text-[11px] text-emerald-600 font-medium">
+          <i class='bx bx-check-shield'></i>
+          <span>Nomor Stand / Booth di-generate otomatis secara berurutan di balik layar</span>
         </div>
       </div>
 
