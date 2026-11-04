@@ -3,7 +3,7 @@
 @section('header_title', 'Klaim Saldo Voucher ke Perusahaan - ' . ($merchant->txtMerchantName ?? 'UMKM'))
 
 @section('content')
-<div class="space-y-6 max-w-5xl">
+<div class="space-y-6 w-full">
 
   <!-- Header Banner -->
   <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -43,6 +43,42 @@
         @endif
       </div>
     </div>
+  </div>
+
+  <!-- Bank Account Info Card for UMKM -->
+  <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex items-start sm:items-center space-x-3.5">
+      <div class="w-12 h-12 rounded-2xl {{ !empty($merchant->txtBankAccountNumber) ? 'bg-emerald-50 text-kmi-600' : 'bg-amber-50 text-amber-600' }} flex items-center justify-center text-2xl shrink-0">
+        <i class='bx {{ !empty($merchant->txtBankAccountNumber) ? 'bxs-bank' : 'bx-error-circle' }}'></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h2 class="text-sm font-bold text-slate-900">Rekening Tujuan Pencairan Dana</h2>
+          @if(!empty($merchant->txtBankAccountNumber))
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-kmi-800">Tersimpan</span>
+          @else
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">Belum Diatur</span>
+          @endif
+        </div>
+        @if(!empty($merchant->txtBankAccountNumber))
+          <p class="text-xs text-slate-600 mt-0.5">
+            Bank <span class="font-bold text-slate-800">{{ $merchant->txtBankName }}</span> &bull; 
+            No. Rekening <span class="font-mono font-bold text-slate-900">{{ $merchant->txtBankAccountNumber }}</span> a.n. 
+            <span class="font-semibold text-slate-800">{{ $merchant->txtBankAccountHolder }}</span>
+          </p>
+        @else
+          <p class="text-xs text-slate-500 mt-0.5">
+            Anda belum mengisi rekening bank. Silakan atur rekening tujuan agar panitia KMI dapat mentransfer pencairan dana voucher Anda.
+          </p>
+        @endif
+      </div>
+    </div>
+
+    <button type="button" onclick="openModal('modalUpdateBank')"
+      class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center space-x-1.5 transition-colors shrink-0">
+      <i class='bx bx-edit text-base'></i>
+      <span>{{ !empty($merchant->txtBankAccountNumber) ? 'Ubah Rekening Bank' : 'Input Rekening Sekarang' }}</span>
+    </button>
   </div>
 
   <!-- History of Submitted Claims -->
@@ -150,6 +186,42 @@
       <div class="pt-2 flex justify-end space-x-2">
         <button type="button" onclick="closeModal('modalSubmitClaim')" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs">Batal</button>
         <button type="submit" class="px-5 py-2 bg-kmi-600 hover:bg-kmi-700 text-white font-bold rounded-xl text-xs shadow-md shadow-kmi-600/30">Ajukan Sekarang</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Update Bank -->
+<div id="modalUpdateBank" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+      <div>
+        <h3 class="text-base font-extrabold text-slate-900">Pengaturan Rekening Bank</h3>
+        <p class="text-xs text-slate-500">Rekening tujuan transfer dana klaim voucher dari panitia KMI</p>
+      </div>
+      <button type="button" onclick="closeModal('modalUpdateBank')" class="p-1 text-slate-400 hover:text-slate-700">
+        <i class='bx bx-x text-2xl'></i>
+      </button>
+    </div>
+
+    <form action="{{ route('umkm.claims.bank') }}" method="POST" class="space-y-3.5">
+      @csrf
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Bank *</label>
+        <input type="text" name="bank_name" required value="{{ $merchant->txtBankName }}" placeholder="Contoh: BCA, Mandiri, BRI, BNI" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-kmi-600 focus:bg-white">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Rekening *</label>
+        <input type="text" name="bank_account_number" required value="{{ $merchant->txtBankAccountNumber }}" placeholder="Contoh: 8830123456" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:outline-none focus:border-kmi-600 focus:bg-white">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pemilik Rekening *</label>
+        <input type="text" name="bank_account_holder" required value="{{ $merchant->txtBankAccountHolder ?? $merchant->txtOwnerName }}" placeholder="Nama sesuai buku tabungan" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-kmi-600 focus:bg-white">
+      </div>
+
+      <div class="pt-2 flex justify-end space-x-2">
+        <button type="button" onclick="closeModal('modalUpdateBank')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Batal</button>
+        <button type="submit" class="px-5 py-2 bg-kmi-600 hover:bg-kmi-700 text-white font-bold rounded-xl text-xs shadow-md shadow-kmi-600/30">Simpan Rekening</button>
       </div>
     </form>
   </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\LogActivity;
 use App\Models\Merchant;
 use App\Models\User;
@@ -27,7 +28,12 @@ class MerchantController extends Controller
 
         $merchants = $query->orderBy('intMerchant_ID')->paginate(10)->withQueryString();
 
-        return view('admin.merchants.index', compact('merchants', 'search'));
+        $categories = Category::whereNull('intMerchant_ID')
+            ->where('bitActive', 1)
+            ->orderBy('txtCategoryName')
+            ->get();
+
+        return view('admin.merchants.index', compact('merchants', 'search', 'categories'));
     }
 
     public function store(Request $request)

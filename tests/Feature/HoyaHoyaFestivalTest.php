@@ -351,4 +351,22 @@ class HoyaHoyaFestivalTest extends TestCase
         $this->assertDatabaseMissing('mEmployee', ['intEmployee_ID' => $employee->intEmployee_ID]);
         $this->assertDatabaseMissing('mVoucher', ['intEmployee_ID' => $employee->intEmployee_ID]);
     }
+
+    public function test_umkm_can_update_bank_account(): void
+    {
+        $cashier = User::where('txtUsername', 'umkm_siti')->first();
+        $this->actingAs($cashier);
+
+        $res = $this->post('/umkm/claims/bank', [
+            'bank_name' => 'Bank Mandiri',
+            'bank_account_number' => '1320099887766',
+            'bank_account_holder' => 'Siti Rahayu Mandiri',
+        ]);
+
+        $res->assertSessionHas('success');
+        $merchant = $cashier->merchant->fresh();
+        $this->assertEquals('Bank Mandiri', $merchant->txtBankName);
+        $this->assertEquals('1320099887766', $merchant->txtBankAccountNumber);
+        $this->assertEquals('Siti Rahayu Mandiri', $merchant->txtBankAccountHolder);
+    }
 }

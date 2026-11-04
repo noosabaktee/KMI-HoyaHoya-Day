@@ -112,5 +112,6 @@ Route::prefix('umkm')->name('umkm.')->middleware(['auth', 'role.umkm'])->group(f
     // Claim Reimbursement to Company
     Route::get('/claims', [UmkmClaimController::class, 'index'])->name('claims.index');
     Route::post('/claims', [UmkmClaimController::class, 'store'])->name('claims.store');
+    Route::post('/claims/bank', [UmkmClaimController::class, 'updateBank'])->name('claims.bank');
     Route::get('/claims/{id}/invoice', [UmkmClaimController::class, 'invoice'])->name('claims.invoice');
 });

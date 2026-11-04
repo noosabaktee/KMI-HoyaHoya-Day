@@ -139,27 +139,13 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Produk</label>
-        <input type="text" name="category" placeholder="Makanan Berat, Minuman, Camilan, dll" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-      </div>
-
-      <!-- Bank Details -->
-      <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Rekening Pencairan Dana Klaim:</p>
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-600 mb-1">Bank</label>
-            <input type="text" name="bank_name" placeholder="BCA/Mandiri/BRI" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-600 mb-1">No Rekening</label>
-            <input type="text" name="bank_account_number" placeholder="123456789" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-600 mb-1">Atas Nama</label>
-            <input type="text" name="bank_account_holder" placeholder="Nama pemilik rek" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
-          </div>
-        </div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Produk *</label>
+        <select name="category" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
+          <option value="">Pilih Kategori Produk...</option>
+          @foreach($categories as $cat)
+            <option value="{{ $cat->txtCategoryName }}">{{ $cat->txtCategoryName }}</option>
+          @endforeach
+        </select>
       </div>
 
       <!-- Account Login Info -->
@@ -168,11 +154,11 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-[10px] font-bold text-slate-700 mb-1">Username Login *</label>
-            <input type="text" name="username" required placeholder="umkm_siti" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
+            <input type="text" name="username" required value="" placeholder="Contoh: umkm_siti" autocomplete="off" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-700 mb-1">Password *</label>
-            <input type="password" name="password" required placeholder="••••••••" value="password" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
+            <input type="password" name="password" required value="" placeholder="Minimal 4 karakter" autocomplete="new-password" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs">
           </div>
         </div>
       </div>
@@ -222,8 +208,13 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Produk</label>
-        <input type="text" name="category" id="edit_category" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+        <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Produk *</label>
+        <select name="category" id="edit_category" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-kmi-600 focus:bg-white">
+          <option value="">Pilih Kategori Produk...</option>
+          @foreach($categories as $cat)
+            <option value="{{ $cat->txtCategoryName }}">{{ $cat->txtCategoryName }}</option>
+          @endforeach
+        </select>
       </div>
 
       <!-- Bank Details -->

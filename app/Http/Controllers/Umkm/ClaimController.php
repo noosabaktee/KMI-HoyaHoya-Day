@@ -117,5 +117,27 @@ class ClaimController extends Controller
 
         return view('umkm.claims.invoice', compact('claim'));
     }
+
+    public function updateBank(Request $request)
+    {
+        $merchant = Auth::user()->merchant;
+        if (!$merchant) abort(403);
+
+        $validated = $request->validate([
+            'bank_name' => 'required|string|max:50',
+            'bank_account_number' => 'required|string|max:50',
+            'bank_account_holder' => 'required|string|max:150',
+        ]);
+
+        $merchant->update([
+            'txtBankName' => trim($validated['bank_name']),
+            'txtBankAccountNumber' => trim($validated['bank_account_number']),
+            'txtBankAccountHolder' => trim($validated['bank_account_holder']),
+        ]);
+
+        LogActivity::record('UPDATE_MERCHANT_BANK', "UMKM {$merchant->txtMerchantName} memperbarui rekening pencairan: {$validated['bank_name']} - {$validated['bank_account_number']}.");
+
+        return redirect()->route('umkm.claims.index')->with('success', 'Rekening pencairan dana berhasil diperbarui!');
+    }
 }
 
